@@ -3,6 +3,9 @@ const express = require('express')
 const User = require('./model/User')
 const bcrypt = require('bcryptjs')
 const app = express()
+const jwt = require('jsonwebtoken')
+// var cookieParser = require("cookie-parser");
+const auth = require('./middleware/auth')
 
 app.use(express.json())
 
@@ -14,7 +17,7 @@ app.post('/auth', async (req, res) => {
     if (!email && !password && !firstName && !lastName) {
       res.status(400).send('all feilds are required')
     }
-    const existingEmail = await User.findOne({ email: email })
+    const existingEmail = await User.findOne({ email })
 
     if (existingEmail) {
       res.status(401).send('email already exists')
@@ -76,6 +79,9 @@ app.post('/login', async (req, res) => {
   } catch (error) {
     console.log(error)
   }
+})
+app.get('/dashboard', auth, (req, res) => {
+  res.send('Welcome to secret information')
 })
 
 module.exports = app
